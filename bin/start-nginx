@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# make sure we have a place for logs
+mkdir -p logs/nginx
+touch logs/nginx/access.log logs/nginx/error.log
+
+echo 'buildpack=nginx at=logs-initialized'
+
+# Redirect NGINX logs to stdout.
+tail -qF -n 0 logs/nginx/*.log &
+
+# Start NGINX
+# We expect nginx to run in foreground.
+echo 'buildpack=nginx at=nginx-start'
+bin/nginx -p . -c config/nginx.conf
+echo "buildpack=nginx at=exit"
+
+exit 1
